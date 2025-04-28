@@ -12,9 +12,9 @@
         "wizeworks"
     ],
     "description": "CLI to generate GraphQL queries/mutations/subscriptions from Wize APIs.",
-    "homepage": "https://github.com/wize-works/wize-scham-factory#readme",
+    "homepage": "https://github.com/wize-works/wize-schema-factory#readme",
     "bugs": {
-        "url": "https://github.com/wize-works/wize-scham-factory/issues"
+        "url": "https://github.com/wize-works/wize-schema-factory/issues"
     },
     "scripts": {
         "build": "tsc",
@@ -27,7 +27,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/wize-works/wize-scham-factory.git"
+        "url": "git+https://github.com/wize-works/wize-schema-factory.git"
     },
     "dependencies": {
         "chalk": "^5.4.1",
