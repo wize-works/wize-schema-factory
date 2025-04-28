@@ -18,6 +18,9 @@
     "bugs": {
         "url": "https://github.com/wize-works/wize-schema-factory/issues"
     },
+    "publishConfig": {
+        "access": "public"
+    },
     "scripts": {
         "build": "tsc",
         "start": "node ./bin/index.js",
