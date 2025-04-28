@@ -1,8 +1,10 @@
 {
     "name": "@wizeworks/wize-schema-factory",
+    "private": false,
     "version": "1.0.1",
     "license": "MIT",
     "author": "Brandon Korous",
+    "readmeFilename": "README.md",
     "type": "module",
     "main": "bin/index.ts",
     "keywords": [
