@@ -6,7 +6,7 @@
     "author": "Brandon Korous",
     "readmeFilename": "README.md",
     "type": "module",
-    "main": "bin/index.ts",
+    "main": "bin/index.js",
     "keywords": [
         "graphql",
         "cli",
