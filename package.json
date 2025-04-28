@@ -1,0 +1,49 @@
+{
+    "name": "wize-schema-factory",
+    "version": "1.0.0",
+    "license": "MIT",
+    "author": "Brandon Korous",
+    "type": "module",
+    "main": "bin/index.ts",
+    "keywords": [
+        "graphql",
+        "cli",
+        "codegen",
+        "wizeworks"
+    ],
+    "description": "CLI to generate GraphQL queries/mutations/subscriptions from Wize APIs.",
+    "homepage": "https://github.com/wize-works/wize-scham-factory#readme",
+    "bugs": {
+        "url": "https://github.com/wize-works/wize-scham-factory/issues"
+    },
+    "scripts": {
+        "build": "tsc",
+        "start": "node ./bin/index.js",
+        "semantic-release": "semantic-release",
+        "format": "prettier --write \"src/**/*.ts\""
+    },
+    "bin": {
+        "wize-schema-factory": "./bin/index.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/wize-works/wize-scham-factory.git"
+    },
+    "dependencies": {
+        "chalk": "^5.4.1",
+        "commander": "^11.1.0",
+        "cross-fetch": "^4.1.0",
+        "mkdirp": "^3.0.1",
+        "prompts": "^2.4.2"
+    },
+    "devDependencies": {
+        "@semantic-release/git": "^10.0.0",
+        "@semantic-release/github": "^10.0.0",
+        "@semantic-release/npm": "^11.0.0",
+        "@types/node": "^22.15.3",
+        "@types/prompts": "^2.4.9",
+        "prettier": "^3.5.3",
+        "semantic-release": "^22.0.0",
+        "typescript": "^5.4.0"
+    }
+}
