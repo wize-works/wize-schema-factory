@@ -13,9 +13,19 @@ import fs from 'fs/promises';
 const program = new Command();
 
 program
-    .requiredOption('--key <wize-api-key>', 'Wize API key')
-    .option('--url <api-url>', 'GraphQL API URL', 'https://api.wize.works/graphql')
-    .option('--output <path>', 'Output directory for graphql files', './graphql')
+    .name('wize-schema-factory')
+    .description('CLI to generate GraphQL operations (queries/mutations/subscriptions) from Wize APIs')
+    .version('1.0.1')
+    .requiredOption('--key <wize-api-key>', 'Your Wize API key (required)')
+    .option('--url <api-url>', 'Wize GraphQL API URL (default: https://api.wize.works/graphql)', 'https://api.wize.works/graphql')
+    .option('--output <path>', 'Output directory for generated files', './graphql')
+    .helpOption('-h, --help', 'Display help for command')
+    .addHelpText('after', `
+Examples:
+  npx wize-schema-factory --key YOUR-WIZE-API-KEY
+  npx wize-schema-factory --key YOUR-WIZE-API-KEY --output ./generated-graphql
+  npx wize-schema-factory --key YOUR-WIZE-API-KEY --url https://api.wize.works/other-service/graphql
+  `)
     .parse(process.argv);
 
 const options = program.opts();
