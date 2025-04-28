@@ -1,5 +1,5 @@
 {
-    "name": "wize-schema-factory",
+    "name": "@wizeworks/wize-schema-factory",
     "version": "1.0.0",
     "license": "MIT",
     "author": "Brandon Korous",
