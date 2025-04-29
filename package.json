@@ -28,7 +28,7 @@
         "format": "prettier --write \"src/**/*.ts\""
     },
     "bin": {
-        "wize-schema-factory": "./bin/index.js"
+        "wize-schema-factory": "./bin/cli.js"
     },
     "repository": {
         "type": "git",
