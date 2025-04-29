@@ -1,7 +1,7 @@
 {
     "name": "wize-schema-factory",
     "private": false,
-    "version": "1.0.9",
+    "version": "1.0.10",
     "license": "MIT",
     "author": "WizeWorks",
     "readmeFilename": "README.md",
