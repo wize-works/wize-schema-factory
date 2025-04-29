@@ -1,5 +1,5 @@
 {
-    "name": "@wizeworks/wize-schema-factory",
+    "name": "wize-schema-factory",
     "private": false,
     "version": "1.0.9",
     "license": "MIT",
