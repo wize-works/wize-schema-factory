@@ -6,7 +6,7 @@
     "author": "WizeWorks",
     "readmeFilename": "README.md",
     "type": "module",
-    "main": "index.js",
+    "main": "cli.js",
     "keywords": [
         "graphql",
         "cli",
@@ -22,7 +22,7 @@
         "access": "public"
     },
     "bin": {
-        "wize-schema-factory": "./bin/cli.js"
+        "wize-schema-factory": "./cli.js"
     },
     "repository": {
         "type": "git",
