@@ -31,7 +31,7 @@ async function runCodegen(configPath) {
     try {
         console.log(chalk.cyan('\n🔧 Running GraphQL Codegen...'));
         const configDir = path.dirname(configPath);
-        await execa('npx', ['graphql-codegen', '--config', 'codegen.yml'], {
+        await execa('npx', ['graphql-codegen', '-c', 'codegen.yml'], {
             cwd: configDir,
             stdio: 'inherit'
         });
