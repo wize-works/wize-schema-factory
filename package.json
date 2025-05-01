@@ -1,12 +1,19 @@
 {
-    "name": "wize-schema-factory",
+    "name": "@wizeworks/wize-schema-factory",
     "private": false,
     "version": "1.0.10",
     "license": "MIT",
     "author": "WizeWorks",
     "readmeFilename": "README.md",
     "type": "module",
-    "main": "index.js",
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
+    "exports": {
+        ".": {
+            "import": "./dist/index.js",
+            "types": "./dist/index.d.ts"
+        }
+    },
     "keywords": [
         "graphql",
         "cli",
@@ -19,9 +26,9 @@
         "url": "https://github.com/wize-works/wize-schema-factory/issues"
     },
     "scripts": {
-        "build": "tsc",
-        "start": "node ./bin/index.js",
-        "dev": "ts-node --esm ./bin/index.ts",
+        "build": "tsup",
+        "start": "node ./dist/index.js",
+        "dev": "ts-node --esm ./src/index.ts",
         "format": "prettier --write \"src/**/*.ts\"",
         "lint": "tsc --noEmit",
         "semantic-release": "semantic-release",
@@ -31,7 +38,7 @@
         "access": "public"
     },
     "bin": {
-        "wize-schema-factory": "./index.js"
+        "wize-schema-factory": "./dist/index.js"
     },
     "repository": {
         "type": "git",
@@ -58,8 +65,8 @@
         "@types/node": "^22.15.3",
         "@types/prompts": "^2.4.9",
         "dotenv": "^16.5.0",
-        "prettier": "^3.5.3",
         "semantic-release": "^22.0.0",
+        "tsup": "^8.0.2",
         "typescript": "^5.4.0"
     }
 }
