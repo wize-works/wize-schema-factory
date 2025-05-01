@@ -38,7 +38,7 @@
         "access": "public"
     },
     "bin": {
-        "wize-schema-factory": "./dist/index.js"
+        "wize-schema-factory": "./bin/index.js"
     },
     "repository": {
         "type": "git",
