@@ -38,7 +38,9 @@ function generateFieldSelection(
                 : `${'    '.repeat(depth + 1)}${field.name}`;
         });
 
-        return `{\n${fields.join('\n')}\n${'  '.repeat(depth)}}`;
+        return `{
+  ${fields.join('\n')}
+  ${'  '.repeat(depth)}}`;
     }
 
     return '';
@@ -52,42 +54,25 @@ export function generateOperations(schema: any, maxDepth = 3) {
     const types = schema.types || [];
 
     types.forEach((type: any) => {
-        if (type.name === 'Query' && type.fields) {
+        if ((type.name === 'Query' || type.name === 'Mutation') && type.fields) {
             type.fields.forEach((field: any) => {
                 const operationName = capitalize(field.name);
                 const fieldSelection = generateFieldSelection(field.type, schema, 1, maxDepth);
+                const args = field.args || [];
 
-                if (field.args && field.args.length > 0) {
-                    const varDefs = field.args
-                        .map((arg: any) => `$${arg.name}: ${unwrapTypeName(arg.type)}`)
-                        .join(', ');
+                const varDefs = args.map((arg: any) => `$${arg.name}: ${unwrapTypeName(arg.type)}!`).join(', ');
+                const params = args.map((arg: any) => `${arg.name}: $${arg.name}`).join(', ');
 
-                    const varUses = field.args
-                        .map((arg: any) => `${arg.name}: $${arg.name}`)
-                        .join(', ');
-
-                    queries[field.name] = `query ${operationName}(${varDefs}) {
-    ${field.name}(${varUses}) ${fieldSelection}
-}`;
-                } else {
-                    queries[field.name] = `query ${operationName} {
+                const operation = args.length > 0
+                    ? `${type.name.toLowerCase()} ${operationName}(${varDefs}) {
+    ${field.name}(${params}) ${fieldSelection}
+  }`
+                    : `${type.name.toLowerCase()} ${operationName} {
     ${field.name} ${fieldSelection}
-}`;
-                }
-            });
-        }
+  }`;
 
-        if (type.name === 'Mutation' && type.fields) {
-            type.fields.forEach((field: any) => {
-                const operationName = capitalize(field.name);
-                const firstArg = field.args?.[0];
-                const inputArg = firstArg ? `($input: ${unwrapTypeName(firstArg.type)}!)` : '';
-                const inputUse = firstArg ? `(input: $input)` : '';
-                const fieldSelection = generateFieldSelection(field.type, schema, 1, maxDepth);
-
-                mutations[field.name] = `mutation ${operationName}${inputArg} {
-    ${field.name}${inputUse} ${fieldSelection}
-}`;
+                if (type.name === 'Query') queries[field.name] = operation;
+                else mutations[field.name] = operation;
             });
         }
 
@@ -98,7 +83,7 @@ export function generateOperations(schema: any, maxDepth = 3) {
 
                 subscriptions[field.name] = `subscription ${operationName} {
     ${field.name} ${fieldSelection}
-}`;
+  }`;
             });
         }
     });

@@ -38,6 +38,13 @@ Generate GraphQL files from a different Wize API endpoint:
 npx @wizeworks/wize-schema-factory --key YOUR-WIZE-API-KEY --url https://api.wize.works/other-service/graphql
 ```
 
+Generate GraphQL files locally and run GraphQL Code Generator:
+
+```bash
+npm run build
+npx node ./bin/index.js --key YOUR-WIZE-API-KEY --url https://api.wize.works/other-service/graphql     
+```
+
 Display help information:
 
 ```bash
