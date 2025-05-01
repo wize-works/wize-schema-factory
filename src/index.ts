@@ -38,7 +38,8 @@ async function runCodegen(configPath: string) {
 
         const configDir = path.dirname(configPath);
 
-        await execa('npx', ['graphql-codegen', '--config', 'codegen.yml'], {
+        // Use the updated command format for graphql-codegen
+        await execa('npx', ['graphql-codegen', '-c', 'codegen.yml'], {
             cwd: configDir,
             stdio: 'inherit'
         });
