@@ -9,6 +9,9 @@ function unwrapTypeName(type: any): string {
     return type.name;
 }
 
+// List of fields to exclude from all generated operations
+const EXCLUDED_FIELDS = ['tenantId'];
+
 function generateFieldSelection(
     type: any,
     schema: any,
@@ -31,12 +34,15 @@ function generateFieldSelection(
         const typeDetails = schema.types.find((t: any) => t.name === type.name);
         if (!typeDetails || !typeDetails.fields) return '';
 
-        const fields = typeDetails.fields.map((field: any) => {
-            const subFieldSelection = generateFieldSelection(field.type, schema, depth + 1, maxDepth, new Set(visitedTypes));
-            return subFieldSelection
-                ? `${'    '.repeat(depth + 1)}${field.name} ${subFieldSelection}`
-                : `${'    '.repeat(depth + 1)}${field.name}`;
-        });
+        const fields = typeDetails.fields
+            // Filter out excluded fields
+            .filter((field: any) => !EXCLUDED_FIELDS.includes(field.name))
+            .map((field: any) => {
+                const subFieldSelection = generateFieldSelection(field.type, schema, depth + 1, maxDepth, new Set(visitedTypes));
+                return subFieldSelection
+                    ? `${'    '.repeat(depth + 1)}${field.name} ${subFieldSelection}`
+                    : `${'    '.repeat(depth + 1)}${field.name}`;
+            });
 
         return `{
   ${fields.join('\n')}

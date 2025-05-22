@@ -21,16 +21,14 @@ export async function generateCodegenConfig(outputDir: string, schemaUrl: string
         ],
         documents: './**/*.graphql', // Match queries, mutations, subscriptions under this folder
         generates: {
-            './generated.ts': {
-                plugins: [
-                    'typescript',
-                    'typescript-operations',
-                    'typescript-urql',
-                ],
+            './generated/': {
+                preset: 'client',
+                plugins: [],
                 config: {
-                    withHooks: true,
-                    withHOC: false,
-                    withComponent: false
+                    useTypeImports: false,
+                    useTypeScript: false,
+                    extensionJs: true, // Add this line to explicitly use .js extension
+                    dedupeFragments: true
                 }
             }
         }
