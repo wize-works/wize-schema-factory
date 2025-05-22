@@ -12,6 +12,21 @@ import path from 'path';
 import fs from 'fs/promises';
 import { execa } from 'execa';
 
+const apis = [
+    'wize-comment',
+    'wize-content',
+    'wize-finance',
+    'wize-identity',
+    'wize-inventory',
+    'wize-log',
+    'wize-media',
+    'wize-messaging',
+    'wize-organization',
+    'wize-project',
+    'wize-task',
+];
+
+
 const program = new Command();
 
 program
@@ -38,8 +53,8 @@ async function runCodegen(configPath: string) {
 
         const configDir = path.dirname(configPath);
 
-        // Use the updated command format for graphql-codegen
-        await execa('npx', ['graphql-codegen', '-c', 'codegen.yml'], {
+        // Use a more compatible approach with no flags
+        await execa('npx', ['graphql-codegen', 'codegen.yml'], {
             cwd: configDir,
             stdio: 'inherit'
         });
@@ -52,54 +67,65 @@ async function runCodegen(configPath: string) {
 }
 
 async function main() {
-    const graphqlFolder = path.resolve(options.output);
 
-    try {
-        await fs.access(graphqlFolder);
+    for (const api of apis) {
 
-        const response = await prompts({
-            type: 'confirm',
-            name: 'overwrite',
-            message: chalk.yellow(`Folder ${options.output} already exists. Overwrite?`),
-            initial: false,
-        });
+        const apiUrl = `https://api.wize.works/${api}/graphql`;
+        //const apiUrl = 'http://localhost:3005/graphql'
+        const graphqlFolder = path.resolve(options.output);
 
-        if (!response.overwrite) {
-            console.log(chalk.red('❌ Aborted. No files were overwritten.'));
-            process.exit(0);
-        } else {
-            console.log(chalk.green('✅ Overwriting existing files.'));
+        try {
+            await fs.access(graphqlFolder);
+
+            const response = await prompts({
+                type: 'confirm',
+                name: 'overwrite',
+                message: chalk.yellow(`Folder ${options.output} already exists. Overwrite?`),
+                initial: false,
+            });
+
+            if (!response.overwrite) {
+                console.log(chalk.red('❌ Aborted. No files were overwritten.'));
+                process.exit(0);
+            } else {
+                console.log(chalk.green('✅ Overwriting existing files.'));
+            }
+        } catch {
+            // Folder does not exist — continue normally
         }
-    } catch {
-        // Folder does not exist — continue normally
+
+        console.log('🔄 Fetching schema from', apiUrl);
+        let schema;
+        try {
+            schema = await fetchSchema(apiUrl, options.key);
+        } catch (error) {
+            console.error(chalk.red('❌ Error fetching schema:'), error);
+            return;
+        }
+
+        console.log('🛠️  Generating operations...');
+
+        const operations = generateOperations(schema);
+
+        const projectName = extractProjectNameFromUrl(apiUrl);
+        const projectFolder = path.join(graphqlFolder, projectName);
+
+        console.log('💾 Writing GraphQL files to', projectFolder);
+        await writeFiles(operations, projectFolder);
+
+        //console.log('🛠️  Generating codegen.yml...');
+        // await generateCodegenConfig(projectFolder, options.url, options.key);
+
+        //   await runCodegen(path.join(projectFolder, 'codegen.yml'));
+
+        console.log(chalk.green('\n✅ Done! GraphQL files and Codegen config are ready.\n'));
+
+        console.log(chalk.green('🎉 Setup Complete!'));
+        console.log(chalk.whiteBright('Generated GraphQL operations are in ') + chalk.cyan(`./graphql/${projectName}/`));
+        console.log(chalk.whiteBright('Generated TypeScript types will be in ') + chalk.cyan(`./graphql/${projectName}/generated.js`) + chalk.whiteBright(' after running Codegen.'));
+        console.log('');
+        console.log(chalk.green('🚀 Happy coding!'));
     }
-
-    console.log('🔄 Fetching schema from', options.url);
-
-    const schema = await fetchSchema(options.url, options.key);
-
-    console.log('🛠️  Generating operations...');
-
-    const operations = generateOperations(schema);
-
-    const projectName = extractProjectNameFromUrl(options.url);
-    const projectFolder = path.join(graphqlFolder, projectName);
-
-    console.log('💾 Writing GraphQL files to', projectFolder);
-    await writeFiles(operations, projectFolder);
-
-    console.log('🛠️  Generating codegen.yml...');
-    await generateCodegenConfig(projectFolder, options.url, options.key);
-
-    await runCodegen(path.join(projectFolder, 'codegen.yml'));
-
-    console.log(chalk.green('\n✅ Done! GraphQL files and Codegen config are ready.\n'));
-
-    console.log(chalk.green('🎉 Setup Complete!'));
-    console.log(chalk.whiteBright('Generated GraphQL operations are in ') + chalk.cyan(`./graphql/${projectName}/`));
-    console.log(chalk.whiteBright('Generated TypeScript types will be in ') + chalk.cyan(`./graphql/${projectName}/generated.ts`) + chalk.whiteBright(' after running Codegen.'));
-    console.log('');
-    console.log(chalk.green('🚀 Happy coding!'));
 }
 
 main().catch((err) => {

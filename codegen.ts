@@ -21,16 +21,15 @@ const config: CodegenConfig = {
         './graphql/wize-project/subscriptions/**/*.graphql',
     ],
     generates: {
-        './graphql/wize-project/generated.ts': {
+        './graphql/wize-project/generated.js': {
+            preset: 'client',
             plugins: [
-                'typescript',
-                'typescript-operations',
-                'typescript-urql',
             ],
             config: {
-                withHooks: true,
-                withComponent: false,
-                withHOC: false,
+                useTypeImports: false,
+                useTypeScript: false,
+                extensionJs: true, // Add this line to explicitly use .js extension
+                dedupeFragments: true
             },
         },
     },
