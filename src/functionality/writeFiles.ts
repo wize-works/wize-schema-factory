@@ -18,7 +18,9 @@ async function writeOperationGroup(
     await mkdirp(dir);
 
     for (const [name, doc] of Object.entries(operations)) {
-        const filePath = path.join(dir, `${name}.${type === 'adminSchemas' ? 'json' : 'graphql'}`);
+        var fileName = name;
+        if (type === 'adminSchemas') { fileName += 's'; }
+        const filePath = path.join(dir, `${fileName}.${type === 'adminSchemas' ? 'json' : 'graphql'}`);
         const content = typeof doc === 'object' ? JSON.stringify(doc, null, 2) : doc;
         
         await fs.writeFile(filePath, content);

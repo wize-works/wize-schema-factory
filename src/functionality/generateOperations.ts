@@ -94,8 +94,9 @@ export function generateOperations(api: string, schema: any, maxDepth = 3) {
             });
         }
 
+        
         if (type.name === type.name.toLowerCase() && type.kind === 'OBJECT' && type.fields) {
-            const database = api.replace(/^wize-/, '');
+            const database = api;
             const metadata: any = {
                 fields: {}
             };
@@ -108,13 +109,12 @@ export function generateOperations(api: string, schema: any, maxDepth = 3) {
                 onCreated: true,
                 onUpdated: true
             };
+
             metadata.tenantScoped = true;
             
             adminSchemas[type.name] = {
                 database,
-                //Do we want tenantID?
-                tenantId: "00000000-0000-0000-0000-000000000000",
-                clientApp: "Some-client-app",
+                clientApp: "<client-app-name>",
                 table: type.name + 's',
                 metadata
             };
