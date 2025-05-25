@@ -105,7 +105,7 @@ async function main() {
 
         console.log('🛠️  Generating operations...');
 
-        const operations = generateOperations(schema);
+        const operations = generateOperations(api, schema);
 
         const projectName = extractProjectNameFromUrl(apiUrl);
         const projectFolder = path.join(graphqlFolder, projectName);

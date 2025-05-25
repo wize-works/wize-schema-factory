@@ -52,10 +52,11 @@ function generateFieldSelection(
     return '';
 }
 
-export function generateOperations(schema: any, maxDepth = 3) {
+export function generateOperations(api: string, schema: any, maxDepth = 3) {
     const queries: Record<string, string> = {};
     const mutations: Record<string, string> = {};
     const subscriptions: Record<string, string> = {};
+    const adminSchemas: Record<string, any> = {};
 
     const types = schema.types || [];
 
@@ -92,7 +93,105 @@ export function generateOperations(schema: any, maxDepth = 3) {
   }`;
             });
         }
-    });
 
-    return { queries, mutations, subscriptions };
+        if (type.name === type.name.toLowerCase() && type.kind === 'OBJECT' && type.fields) {
+            const database = api.replace(/^wize-/, '');
+            const metadata: any = {
+                fields: {}
+            };
+            
+            type.fields.forEach((field: any) => {
+                metadata.fields[field.name] = generateMetadataForField(field, schema);
+            });
+            
+            metadata.subscriptions = {
+                onCreated: true,
+                onUpdated: true
+            };
+            metadata.tenantScoped = true;
+            
+            adminSchemas[type.name] = {
+                database,
+                //Do we want tenantID?
+                tenantId: "00000000-0000-0000-0000-000000000000",
+                clientApp: "Some-client-app",
+                table: type.name + 's',
+                metadata
+            };
+        }
+    });
+    return { queries, mutations, subscriptions, adminSchemas };
+}
+
+function generateMetadataForField(field: any, schema: any): any {
+    const { type, isRequired } = determineFieldType(field.type);
+    const metadata: any = { type };
+    
+    if (isRequired) {
+        metadata.required = true;
+    }
+    
+    if (type === 'array') {
+        const itemType = field.type.ofType ? determineFieldType(field.type.ofType) : { type: 'string' };
+        metadata.items = { type: itemType.type };
+    }
+    
+    if (type === 'enum') {
+        const enumType = unwrapTypeName(field.type);
+        const enumTypeDetails = schema.types.find((t: any) => t.name === enumType);
+        
+        if (enumTypeDetails && enumTypeDetails.enumValues) {
+            metadata.values = enumTypeDetails.enumValues.map((ev: any) => ev.name);
+            metadata.defaultValue = metadata.values[0];
+        }
+    }
+    
+    if (type === 'object') {
+        const objectType = unwrapTypeName(field.type);
+        const objectTypeDetails = schema.types.find((t: any) => t.name === objectType);
+        
+        if (objectTypeDetails && objectTypeDetails.fields) {
+            metadata.fields = {};
+            objectTypeDetails.fields.forEach((subField: any) => {
+                metadata.fields[subField.name] = generateMetadataForField(subField, schema);
+            });
+        }
+    }
+    return metadata;
+}
+
+function determineFieldType(type: any): { type: string, isRequired: boolean } {
+    if (type.kind === 'NON_NULL') {
+        const unwrapped = determineFieldType(type.ofType);
+        return { ...unwrapped, isRequired: true };
+    }
+    
+    if (type.kind === 'LIST') {
+        return { type: 'array', isRequired: false };
+    }
+    
+    switch (type.name) {
+        case 'ID': 
+        case 'UUID': 
+            return { type: 'uuid', isRequired: false };
+        case 'String': 
+            return { type: 'string', isRequired: false };
+        case 'Int': 
+            return { type: 'integer', isRequired: false };
+        case 'Float': 
+            return { type: 'float', isRequired: false };
+        case 'Boolean': 
+            return { type: 'boolean', isRequired: false };
+        case 'DateTime': 
+        case 'Date': 
+            return { type: 'datetime', isRequired: false };
+        default:
+            if (type.kind === 'ENUM') {
+                return { type: 'enum', isRequired: false };
+            }
+            if (type.kind === 'OBJECT') {
+                return { type: 'object', isRequired: false };
+            }
+            return { type: 'string', isRequired: false };
+    }
 }
